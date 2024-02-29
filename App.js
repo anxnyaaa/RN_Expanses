@@ -16,14 +16,16 @@ const BottomTabs = createBottomTabNavigator();
 
 function ExpensesOverView() {
   return (
-    <BottomTabs.Navigator screenOptions={{
+    <BottomTabs.Navigator screenOptions={({navigation}) => ({
       headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
       headerTintColor: 'white',
       tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
       tabBarActiveTintColor: GlobalStyles.colors.accent500,
-      headerRight: ({tintColor}) => 
-        <IconButton icon='add' size={24} color={tintColor} onPress={() => {}}/>
-    }}>
+      headerRight: ({tintColor}) => (
+        <IconButton icon='add' size={24} color={tintColor} 
+          onPress={() => {navigation.navigate('Manage Expenses')}}/>
+      ),
+    })}>
       <BottomTabs.Screen name="Recent Expenses" component={RecentExpenses} 
         options={{
           title: 'Recent Expenses', 
