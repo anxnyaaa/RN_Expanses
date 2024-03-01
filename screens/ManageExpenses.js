@@ -1,6 +1,13 @@
-import { useLayoutEffect } from "react";
-import { View, Text, StyleSheet } from "react-native"
+import { useContext, useLayoutEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+
+import IconButton from '../components/UI/IconButton'
+import {GlobalStyles} from '../constants/styles'
+import Button from "../components/UI/Button";
+import { ExpensesContext } from "../store/expenses-context";
+
 function ManageExpenses({route, navigation}) {
+    const expenseCtx = useContext(ExpensesContext);
     const editedExpenseId = route.params?.expenseId;
     const isEditing = !!editedExpenseId;
 
@@ -10,9 +17,46 @@ function ManageExpenses({route, navigation}) {
         });
     }, [navigation, isEditing]);
 
+    function deleteExpenseHandler() {
+        expenseCtx.deleteExpense(editedExpenseId);
+        navigation.goBack();        
+    }
+
+    function cancelHandler() {
+        navigation.goBack();
+    }
+
+    function confirmHandler() {
+        if (isEditing) {
+            expenseCtx.updateExpense(editedExpenseId, {
+                description: 'Test!!!!!',
+                amount: 29.99,
+                date: new Date('2024-02-28')
+            });
+        } else {
+            expenseCtx.addExpense({
+                description: 'Test',
+                amount: 19.99,
+                date: new Date('2024-05-19')
+            });
+        }
+        navigation.goBack();
+    }
+
+
+
     return (
         <View style={styles.rootContainer}>
-            <Text style={styles.text}>Manage Expenses Screen</Text>
+            <View style={styles.buttonContainer}>
+                <Button style={styles.button} mode='flat' onPress={cancelHandler}>Cancel</Button>
+                <Button style={styles.button} onPress={confirmHandler}>{isEditing? 'Update' : 'Add'}</Button>
+            </View>
+            {isEditing && (
+                <View style={styles.deleteContainer}>
+                    <IconButton icon="trash" color={GlobalStyles.colors.error500} size={36} onPress={deleteExpenseHandler}/>
+                </View>
+            )}
+            {/* <Text style={styles.text}>Manage Expenses Screen</Text> */}
         </View>
     );
 };
@@ -22,11 +66,29 @@ export default ManageExpenses;
 const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        padding: 24,
+        backgroundColor: GlobalStyles.colors.primary800,
     },
-    text: {
-        fontSize: 18,
-        fontWeight: 'bold',
+    // text: {
+    //     fontSize: 18,
+    //     fontWeight: 'bold',
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    // },
+    deleteContainer: {
+        marginTop: 16,
+        paddingTop: 8,
+        borderTopWidth: 2,
+        borderTopColor: GlobalStyles.colors.primary200,
+        alignItems: 'center',
+    },     
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    button: {
+        minWidth: 120,
+        marginHorizontal: 8,
     },
 })
